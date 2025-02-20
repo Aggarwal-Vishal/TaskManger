@@ -3,11 +3,9 @@ import { Task } from "../model/task.model.js";
 export const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, completed } = req.body;
+    const { title } = req.body;
     const updatedData = {
       title,
-      description,
-      completed,
     };
     const updatedTask = await Task.findByIdAndUpdate(id, updatedData, {
       new: true,
@@ -36,8 +34,8 @@ export const updateTask = async (req, res) => {
 
 export const createTask = async (req, res) => {
   try {
-    const { title, description, completed } = req.body;
-    if (!title || !description || !completed) {
+    const { title } = req.body;
+    if (!title) {
       return res.status(400).json({
         message: "All field required",
         success: false,
@@ -45,8 +43,8 @@ export const createTask = async (req, res) => {
     }
     await Task.create({
       title,
-      description,
-      completed,
+      // description,
+      // completed,
     });
     return res.status(200).json({
       message: "Task Added",
@@ -73,6 +71,23 @@ export const deleteTask = async (req, res) => {
     console.log(error);
     return res.status(404).json({
       message: "Task not deleted",
+      success: false,
+    });
+  }
+};
+
+export const getTask = async (req, res) => {
+  try {
+    const tasks = await Task.find().sort({ createdAt: -1 });
+    return res.status(200).json({
+      message: "Task fetched successfully",
+      success: true,
+      tasks,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Failed to fetch",
       success: false,
     });
   }
